@@ -4,6 +4,7 @@ local EnchantmentsLDB = LibStub("LibDataBroker-1.1"):NewDataObject("Enchantments
   text = "Enchantments",
   icon = "Interface\\Icons\\Spell_ChargeNegative",
   OnClick = function() Enchantments:Trigger() end,
+  OnTooltipShow = function(tooltip) Enchantments:Tooltip(tooltip) end,
 })
 local icon = LibStub("LibDBIcon-1.0")
 
@@ -53,6 +54,10 @@ function Enchantments:Trigger()
   else
     self:Disable()
   end
+end
+
+function Enchantments:Tooltip(tooltip)
+  tooltip:SetText("Enchantments " .. (self.enabled and "Enabled" or "Disabled"))
 end
 
 -- Chat parser
