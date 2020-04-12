@@ -39,6 +39,8 @@ function Enchantments:Enable()
   EnchantmentsLDB.icon = "Interface\\Icons\\Spell_ChargePositive"
 
   self:RegisterEvent("CHAT_MSG_CHANNEL")
+  self:RegisterEvent("CHAT_MSG_SAY")
+  self:RegisterEvent("CHAT_MSG_YELL")
 end
 
 function Enchantments:Disable()
@@ -47,6 +49,8 @@ function Enchantments:Disable()
   EnchantmentsLDB.icon = "Interface\\Icons\\Spell_ChargeNegative"
 
   self:UnregisterEvent("CHAT_MSG_CHANNEL")
+  self:UnregisterEvent("CHAT_MSG_SAY")
+  self:UnregisterEvent("CHAT_MSG_YELL")
 end
 
 function Enchantments:Trigger()
@@ -63,11 +67,23 @@ end
 
 -- Chat parser
 function Enchantments:CHAT_MSG_CHANNEL(_, text, playerName, _, _, _, _, zoneChannelID, _, _, _, lineID, _, bnSenderID, ...)
+  self:HandleMessage(text, playerName, zoneChannelID)
+end
+
+function Enchantments:CHAT_MSG_SAY(_, text, playerName, _, _, _, _, zoneChannelID, _, _, _, lineID, _, bnSenderID, ...)
+  self:HandleMessage(text, playerName, zoneChannelID)
+end
+
+function Enchantments:CHAT_MSG_YELL(_, text, playerName, _, _, _, _, zoneChannelID, _, _, _, lineID, _, bnSenderID, ...)
+  self:HandleMessage(text, playerName, zoneChannelID)
+end
+
+function Enchantments:HandleMessage(text, playerName, zoneChannelID)
   local lcText = text:lower()
   -- check that text doesn't contain words that we are not interested in
   if HasBannedWord(lcText) then return end
 
-  if not HasSearchWord(lcText) then return end
+  if not self:HasSearchWord(lcText) then return end
   -- print message to chat
   self:Printf("|cff1E90FF|Hplayer:%s:%s|h[%s]|h|r: |cffFFFF66 %s|r", playerName, zoneChannelID, playerName, text)
   -- sound action window close. For open: 5274
@@ -80,25 +96,34 @@ function Enchantments:CHAT_MSG_CHANNEL(_, text, playerName, _, _, _, _, zoneChan
 end
 
 function HasBannedWord(text)
-  local bannedWords = { '300', 'lfw', 'phase', 'looking for work', 'best enchants', 'and .* other .*', 'your mats', 'fiery core', 'wts', '+ more'}
+  local bannedWords = {
+    '300', 'lfw', 'phase', 'looking for work', 'best enchants',
+    'and .* other .*', 'your mats', 'fiery core', 'wts', '+ more', '+4 stats', '30 spell', '30 spd', 'riding',
+    'guild', 'hosted', 'pug', 'mallet', 'invite', 'reserved'
+  }
 
   for i = 1, #bannedWords do
-    if text:find(bannedWords[i]) then return true end
+    if text:find(bannedWords[i]) then
+      return true
+    end
   end
 
   return false
 end
 
-function HasSearchWord(text)
+function Enchantments:HasSearchWord(text)
   local wordsToSearch = {
-    'enchanter', 'ench', 'enchanter', '.* lf .* enchanter',
+    'enchanter', 'enchanter', '.* lf .* enchanter',
     'crusader', 'fiery', 'agility', '3 stats', 'riding skill',
     '55 healing', '30 spell', 'who can .* enchant', 'healing power',
-    '4 stats', '.* wtb .* ench'
+    '4 stats', 'enchant', 'can .* enchant'
   }
 
   for i = 1, #wordsToSearch do
-    if text:match(wordsToSearch[i]) then return true end
+    if text:match(wordsToSearch[i]) then
+      self:Print(text:match(wordsToSearch[i]))
+      return true
+    end
   end
 
   return false
@@ -111,7 +136,7 @@ function Enchantments:ChatReply(player)
   end
 
   self.repliesCache[player] = true
-  SendChatMessage("Hi! I'm 300 enchanter on IF bridge, I can help", "WHISPER", "Common", player);
+  SendChatMessage("Hi! I'm 300 enchanter on IF bridge, what enchant do you need?", "WHISPER", "Common", player);
 end
 
 -- Register Commands and Events
