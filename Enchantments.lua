@@ -17,6 +17,7 @@ function Enchantments:OnInitialize()
   })
 
   self.enabled = false
+  self.repliesCache = {}
   -- Register Minimap Icon
   icon:Register("EnchantmentsLDB", EnchantmentsLDB, self.db.profile.minimap)
 end
@@ -68,13 +69,16 @@ function Enchantments:CHAT_MSG_CHANNEL(_, text, playerName, _, _, _, _, zoneChan
 
   if not HasSearchWord(lcText) then return end
   -- print message to chat
-  self:Printf("|cff1E90FF|Hplayer:%s:%s|h[%s]|h|r: |cffFFFF66|%s|r", playerName, zoneChannelID, playerName, text)
+  self:Printf("|cff1E90FF|Hplayer:%s:%s|h[%s]|h|r: |cffFFFF66 %s|r", playerName, zoneChannelID, playerName, text)
   -- sound action window close. For open: 5274
   PlaySound(5275)
+
+  -- Send Message
+  self:SendMessage(playerName)
 end
 
 function HasBannedWord(text)
-  local bannedWords = { '300', 'lfw', 'phase', 'looking for work', 'best enchants', 'and .* other .*', 'your mats' }
+  local bannedWords = { '300', 'lfw', 'phase', 'looking for work', 'best enchants', 'and .* other .*', 'your mats', 'fiery core', 'wts', '+ more'}
 
   for i = 1, #bannedWords do
     if text:find(bannedWords[i]) then return true end
@@ -98,5 +102,14 @@ function HasSearchWord(text)
   return false
 end
 
+function Enchantments:SendMessage(player)
+  -- if player is already in our cache - do not auto reply
+  if self.repliesCache[player] then
+    return
+  end
+
+  self.repliesCache[player] = true
+  SendChatMessage("Hi! I'm 300 enchanter on IF bridge, I can help", "WHISPER", "Common", player);
+end
 -- Register Commands and Events
 Enchantments:RegisterChatCommand("ench", "HandleSlashInput")
