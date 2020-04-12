@@ -74,7 +74,9 @@ function Enchantments:CHAT_MSG_CHANNEL(_, text, playerName, _, _, _, _, zoneChan
   PlaySound(5275)
 
   -- Send Message
-  self:SendMessage(playerName)
+  self:ChatReply(playerName)
+  -- Invite to party
+  InviteUnit(playerName)
 end
 
 function HasBannedWord(text)
@@ -102,7 +104,7 @@ function HasSearchWord(text)
   return false
 end
 
-function Enchantments:SendMessage(player)
+function Enchantments:ChatReply(player)
   -- if player is already in our cache - do not auto reply
   if self.repliesCache[player] then
     return
@@ -111,5 +113,6 @@ function Enchantments:SendMessage(player)
   self.repliesCache[player] = true
   SendChatMessage("Hi! I'm 300 enchanter on IF bridge, I can help", "WHISPER", "Common", player);
 end
+
 -- Register Commands and Events
 Enchantments:RegisterChatCommand("ench", "HandleSlashInput")
