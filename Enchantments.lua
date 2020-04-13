@@ -91,10 +91,10 @@ function Enchantments:Trigger()
 end
 
 function Enchantments:Tooltip(tooltip)
-  tooltip:SetText("Enchantments " .. (self.enabled and "Enabled" or "Disabled"))
-  tooltip:AddLine("Left Click - enable/disable")
-  tooltip:AddLine("Right Click - announce in chat")
-  tooltip:AddLine("Middle Click - show settings")
+  tooltip:SetText("Enchantments " .. (self.enabled and "|cff32CD32Enabled|r" or "|cffFF0000Disabled|r"))
+  tooltip:AddLine("|cffA9A9A9Left Click:|r enable/disable")
+  tooltip:AddLine("|cffA9A9A9Right Click:|r announce in chat")
+  tooltip:AddLine("|cffA9A9A9Middle Click:|r show settings")
 end
 
 -- Chat parser
