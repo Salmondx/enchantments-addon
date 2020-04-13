@@ -84,11 +84,17 @@ function Enchantments:HandleMessage(text, playerName, zoneChannelID)
   if HasBannedWord(lcText) then return end
 
   if not self:HasSearchWord(lcText) then return end
+
+  if self.repliesCache[player] then
+    return
+  end
+
+  self.repliesCache[player] = true
+
   -- print message to chat
   self:Printf("|cff1E90FF|Hplayer:%s:%s|h[%s]|h|r: |cffFFFF66 %s|r", playerName, zoneChannelID, playerName, text)
   -- sound action window close. For open: 5274
   PlaySound(5275)
-
   -- Send Message
   self:ChatReply(playerName)
   -- Invite to party
@@ -99,7 +105,7 @@ function HasBannedWord(text)
   local bannedWords = {
     '300', 'lfw', 'phase', 'looking for work', 'best enchants',
     'and .* other .*', 'your mats', 'fiery core', 'wts', '+ more', '+4 stats', '30 spell', '30 spd', 'riding',
-    'guild', 'hosted', 'pug', 'mallet', 'invite', 'reserved'
+    'guild', 'hosted', 'pug', 'mallet', 'invite', 'reserved', '+4stats', '+4'
   }
 
   for i = 1, #bannedWords do
@@ -131,11 +137,6 @@ end
 
 function Enchantments:ChatReply(player)
   -- if player is already in our cache - do not auto reply
-  if self.repliesCache[player] then
-    return
-  end
-
-  self.repliesCache[player] = true
   SendChatMessage("Hi! I'm 300 enchanter on IF bridge, what enchant do you need?", "WHISPER", "Common", player);
 end
 
